@@ -2,11 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.Constant;
 import com.example.demo.model.request.UserLoginRequest;
+import com.example.demo.model.request.UserRegisterRequest;
 import com.example.demo.model.response.LoginResponse;
+import com.example.demo.model.response.RegisterResponse;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +24,9 @@ public class UserController {
         return ResponseEntity.ok(userService.login(userLoginRequest));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = Constant.ENDPOINT_USER_REGISTER)
-    public void register() {
-
+    public ResponseEntity<RegisterResponse> register(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
+        return ResponseEntity.ok(userService.register(userRegisterRequest));
     }
 }
