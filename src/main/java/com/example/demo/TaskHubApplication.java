@@ -8,8 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class TaskHubApplication {
 
 	public static void main(String[] args) {
-		BCryptPasswordEncoder p = new BCryptPasswordEncoder();
-		System.out.println(p.encode("123456"));
 		SpringApplication.run(TaskHubApplication.class, args);
 	}
 

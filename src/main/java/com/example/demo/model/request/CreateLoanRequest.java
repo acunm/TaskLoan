@@ -13,7 +13,7 @@ public class CreateLoanRequest {
     @NotNull
     private BigDecimal loanAmount;
     @NotNull
-    private int installmentCount;
+    private Integer installmentCount;
     @NotNull
     private BigDecimal interestRate;
 }
