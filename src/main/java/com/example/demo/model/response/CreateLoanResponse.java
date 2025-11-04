@@ -13,11 +13,13 @@ import java.util.List;
 public class CreateLoanResponse {
     private BigDecimal loanAmount;
     private LocalDate nextDueDate;
+    private boolean isPaid;
     private List<InstallmentResponse> installments;
 
     public CreateLoanResponse(Loan loan, List<LoanInstallment> installments) {
         loanAmount = loan.getLoanAmount();
         this.installments = installments.stream().map(InstallmentResponse::new).toList();
         nextDueDate = this.installments.getFirst().getDueDate();
+        isPaid = loan.isPaid();
     }
 }
