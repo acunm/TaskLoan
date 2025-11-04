@@ -29,17 +29,17 @@ public class UserService {
         Optional<User> userOptional = userRepository.findByUsername(userLoginRequest.getUsername());
 
         if(userOptional.isEmpty())
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("User does not exist: " + userLoginRequest.getUsername());
 
         User user = userOptional.get();
 
         if(!passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword()))
-            throw new BadCredentialsException();
+            throw new BadCredentialsException("Invalid Credentials");
 
         return LoginResponse.builder().token(jwtService.generateToken(user)).build();
     }
 
     public User findUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User does not exist: " + username));
     }
 }
