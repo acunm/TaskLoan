@@ -29,7 +29,7 @@ public class SecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)   // for h2 console
                 )
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/loan/user/login").permitAll()
+                        auth.requestMatchers("/user/login").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .anyRequest().authenticated()
                 )
