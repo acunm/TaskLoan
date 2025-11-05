@@ -14,5 +14,7 @@ public class Constant {
     public static final String ENDPOINT_USER_LOGIN = ENDPOINT_USER + "/login";
 
     public static final String ENDPOINT_LOAN = "/loan";
+    public static final String ENDPOINT_GET_LOAN = ENDPOINT_LOAN + "/{loanId}";
+    public static final String ENDPOINT_LIST_LOAN = ENDPOINT_LOAN;
 
 }

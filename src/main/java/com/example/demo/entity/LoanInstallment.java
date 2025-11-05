@@ -1,8 +1,10 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,14 +12,17 @@ import java.time.LocalDate;
 @Entity
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "loan_installments")
 public class LoanInstallment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     private Long installmentId;
-    @Column(nullable = false)
-    private Long loanId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loan_id", nullable = false)
+    private Loan loan;
     @Column(nullable = false)
     private BigDecimal amount;
     @Column(nullable = false)

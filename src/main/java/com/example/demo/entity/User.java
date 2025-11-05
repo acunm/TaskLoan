@@ -30,6 +30,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    public boolean isAdmin() {
+        return getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + userRole.name()));

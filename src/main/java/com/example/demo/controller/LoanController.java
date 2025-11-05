@@ -1,19 +1,21 @@
 package com.example.demo.controller;
 
 import com.example.demo.Constant;
+import com.example.demo.entity.User;
 import com.example.demo.exception.InvalidInstallmentOptionException;
 import com.example.demo.exception.InvalidInterestRateException;
 import com.example.demo.model.request.CreateLoanRequest;
 import com.example.demo.model.response.CreateLoanResponse;
+import com.example.demo.model.response.LoanResponse;
 import com.example.demo.service.LoanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,4 +36,13 @@ public class LoanController {
         return ResponseEntity.ok(loanService.createLoan(request));
     }
 
+    @GetMapping(value = Constant.ENDPOINT_GET_LOAN)
+    public ResponseEntity<LoanResponse> getLoan(@PathVariable Long loanId) {
+        return ResponseEntity.ok(loanService.getLoan(loanId));
+    }
+
+    @GetMapping(value = Constant.ENDPOINT_LIST_LOAN)
+    public ResponseEntity<List<LoanResponse>> listLoans(@RequestParam(name = "customerId") Long customerId) {
+        return ResponseEntity.ok(loanService.listUserLoans(customerId));
+    }
 }

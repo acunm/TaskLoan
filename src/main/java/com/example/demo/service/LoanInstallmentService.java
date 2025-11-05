@@ -28,7 +28,7 @@ public class LoanInstallmentService {
 
         for(int i=0; i < loan.getNumberOfInstallment(); i++) {
             LoanInstallment li = LoanInstallment.builder()
-                    .loanId(loan.getLoanId())
+                    .loan(loan)
                     .dueDate(calculateNextDueDate(currentDate))
                     .paymentDate(null)
                     .amount(installmentAmount)
