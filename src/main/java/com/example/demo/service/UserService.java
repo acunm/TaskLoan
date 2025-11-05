@@ -3,7 +3,6 @@ package com.example.demo.service;
 import com.example.demo.Constant;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.User;
-import com.example.demo.exception.BadCredentialsException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.jwt.JwtService;
 import com.example.demo.model.Role;
@@ -11,10 +10,9 @@ import com.example.demo.model.request.UserLoginRequest;
 import com.example.demo.model.request.UserRegisterRequest;
 import com.example.demo.model.response.LoginResponse;
 import com.example.demo.model.response.RegisterResponse;
-import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +43,7 @@ public class UserService {
         Optional<User> userOptional = userRepository.findByUsername(userLoginRequest.getUsername());
 
         if(userOptional.isEmpty())
-            throw new UserNotFoundException("User does not exist: " + userLoginRequest.getUsername());
+            throw new BadCredentialsException("Invalid Credentials");
 
         User user = userOptional.get();
 
