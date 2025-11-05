@@ -6,6 +6,7 @@ import com.example.demo.jwt.JwtService;
 import com.example.demo.model.request.UserLoginRequest;
 import com.example.demo.model.request.UserRegisterRequest;
 import com.example.demo.model.response.LoginResponse;
+import com.example.demo.model.response.RegisterResponse;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +47,6 @@ class UserControllerTests {
     private JwtService jwtService;
 
     @Test
-    @WithMockUser
     @DisplayName("Login with existing(admin) user should return 200 and valid response")
     void loginWithExistingUser_ShouldReturnOk() throws Exception {
         UserLoginRequest request = UserLoginRequest.builder().username("admin").password("123456").build();
@@ -76,5 +76,28 @@ class UserControllerTests {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Invalid Credentials"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Register should return valid response")
+    void registerUser_ShouldReturnOk() throws Exception {
+        UserRegisterRequest request = UserRegisterRequest.builder()
+                .name("name")
+                .surname("surname")
+                .username("username")
+                .password("password")
+                .build();
+
+        RegisterResponse response = RegisterResponse.builder().username("username").build();
+
+        Mockito.when(userService.register(request)).thenReturn(response);
+
+        mockMvc.perform(post(Constant.ENDPOINT_USER_REGISTER)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("username"));
     }
 }
