@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/user/login").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
+                                .requestMatchers("/create-demo-data").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

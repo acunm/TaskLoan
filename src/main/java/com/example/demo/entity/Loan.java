@@ -18,7 +18,8 @@ import java.util.List;
 @Table(name = "loans")
 public class Loan {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "loanIdGenerator")
     @Column(nullable = false)
     private Long loanId;
     @Column(nullable = false)

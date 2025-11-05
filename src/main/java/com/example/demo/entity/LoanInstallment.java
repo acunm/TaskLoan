@@ -17,7 +17,8 @@ import java.time.LocalDate;
 @Table(name = "loan_installments")
 public class LoanInstallment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "installmentIdGenerator")
     @Column(nullable = false)
     private Long installmentId;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,7 +30,7 @@ public class LoanInstallment {
     private BigDecimal paidAmount;
     @Column(nullable = false)
     private LocalDate dueDate;
-    @Column()
+    @Column
     private LocalDate paymentDate;
     @Column(nullable = false)
     private boolean isPaid;

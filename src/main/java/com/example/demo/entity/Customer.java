@@ -10,7 +10,8 @@ import java.math.BigDecimal;
 @Table(name = "customers")
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "customerIdGenerator")
     @Column(nullable = false)
     private Long customerId;
     @Column(nullable = false)
