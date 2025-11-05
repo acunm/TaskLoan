@@ -4,8 +4,10 @@ import com.example.demo.Constant;
 import com.example.demo.exception.InvalidInstallmentOptionException;
 import com.example.demo.exception.InvalidInterestRateException;
 import com.example.demo.model.request.CreateLoanRequest;
+import com.example.demo.model.request.PayInstallmentRequest;
 import com.example.demo.model.response.CreateLoanResponse;
 import com.example.demo.model.response.LoanResponse;
+import com.example.demo.model.response.PayInstallmentResponse;
 import com.example.demo.service.LoanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,11 @@ public class LoanController {
     @GetMapping(value = Constant.ENDPOINT_GET_LOAN)
     public ResponseEntity<LoanResponse> getLoan(@PathVariable Long loanId) {
         return ResponseEntity.ok(loanService.getLoanResponse(loanId));
+    }
+
+    @PostMapping(value = Constant.ENDPOINT_GET_LOAN)
+    public ResponseEntity<PayInstallmentResponse> payInstallment(@PathVariable Long loanId, @RequestBody PayInstallmentRequest request) {
+        return ResponseEntity.ok(loanService.payInstallment(loanId, request));
     }
 
     @GetMapping(value = Constant.ENDPOINT_LIST_LOAN)

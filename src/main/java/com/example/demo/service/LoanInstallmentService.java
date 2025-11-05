@@ -68,6 +68,17 @@ public class LoanInstallmentService {
         return loanInstallmentRepository.findAllByLoan_LoanId(loanId).stream().map(InstallmentResponse::new).toList();
     }
 
+    public List<LoanInstallment> findLoanInstallments(Long loanId) {
+        return loanInstallmentRepository.findAllByLoan_LoanId(loanId);
+    }
+
+    public LoanInstallment payInstallment(LoanInstallment installment, BigDecimal paidAmount) {
+        installment.setPaidAmount(paidAmount);
+        installment.setPaid(true);
+        installment.setPaymentDate(LocalDate.now());
+        return loanInstallmentRepository.save(installment);
+    }
+
     @Autowired
     @Lazy
     public void setLoanService(LoanService loanService) {

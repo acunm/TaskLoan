@@ -22,5 +22,4 @@ public class LoanInstallmentController {
         return ResponseEntity.ok(loanInstallmentService.listLoanInstallments(loanId));
     }
 
-
 }
