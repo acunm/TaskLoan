@@ -17,4 +17,7 @@ public class Constant {
     public static final String ENDPOINT_GET_LOAN = ENDPOINT_LOAN + "/{loanId}";
     public static final String ENDPOINT_LIST_LOAN = ENDPOINT_LOAN;
 
+    public static final String ENDPOINT_LOAN_INSTALLMENT = "loan-installments";
+    public static final String ENDPOINT_LOAN_INSTALLMENT_LIST = ENDPOINT_LOAN_INSTALLMENT + "/{loanId}";
+
 }

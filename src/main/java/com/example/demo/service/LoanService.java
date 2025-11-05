@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +57,11 @@ public class LoanService {
             throw new CustomerLimitIsNotEnoughException("Customer's remaining limit: " + remainingLimit);
     }
 
-    public LoanResponse getLoan(Long loanId) {
+    public Loan getLoan(Long loanId) {
+        return loanRepository.findById(loanId).orElseThrow(() -> new LoanNotFoundException("Loan with id '" + loanId + "' not found."));
+    }
+
+    public LoanResponse getLoanResponse(Long loanId) {
         Optional<Loan> loanOptional = loanRepository.findById(loanId);
         return loanOptional.map(LoanResponse::new)
                 .orElseThrow(() -> new LoanNotFoundException("Loan with id '" + loanId + "' not found."));

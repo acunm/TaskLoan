@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.Constant;
-import com.example.demo.entity.User;
 import com.example.demo.exception.InvalidInstallmentOptionException;
 import com.example.demo.exception.InvalidInterestRateException;
 import com.example.demo.model.request.CreateLoanRequest;
@@ -11,7 +10,6 @@ import com.example.demo.service.LoanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -38,7 +36,7 @@ public class LoanController {
 
     @GetMapping(value = Constant.ENDPOINT_GET_LOAN)
     public ResponseEntity<LoanResponse> getLoan(@PathVariable Long loanId) {
-        return ResponseEntity.ok(loanService.getLoan(loanId));
+        return ResponseEntity.ok(loanService.getLoanResponse(loanId));
     }
 
     @GetMapping(value = Constant.ENDPOINT_LIST_LOAN)
