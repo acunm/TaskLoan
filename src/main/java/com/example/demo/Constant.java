@@ -23,13 +23,4 @@ public class Constant {
 
     public static final String ENDPOINT_LOAN_INSTALLMENT = "loan-installments";
     public static final String ENDPOINT_LOAN_INSTALLMENT_LIST = ENDPOINT_LOAN_INSTALLMENT + "/{loanId}";
-
-
-    public static void main(String[] args) {
-        // TODO remove
-        LocalDate start = LocalDate.of(2025, 9, 1);
-        LocalDate now = LocalDate.now();
-
-        System.out.println(ChronoUnit.MONTHS.between(start, now));
-    }
 }
