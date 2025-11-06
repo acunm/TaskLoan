@@ -11,8 +11,11 @@ import com.example.demo.repository.LoanRepository;
 import com.example.demo.service.CustomerService;
 import com.example.demo.service.LoanInstallmentService;
 import com.example.demo.service.LoanService;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +51,7 @@ public class LoanServiceTests {
     private LoanService loanService;
 
     @BeforeEach
-    void setupSecurityContext() {
+    void setupSecurityContext(TestInfo info) {
         User mockUser = new User();
         mockUser.setUserId(1L);
         UsernamePasswordAuthenticationToken auth =
@@ -108,6 +112,63 @@ public class LoanServiceTests {
     }
 
     @Test
+    void calculatePaymentAmount_ShouldPayLessBeforeDueDate() {
+        LoanInstallment loanInstallment = new LoanInstallment();
+        loanInstallment.setAmount(BigDecimal.valueOf(1000));
+        loanInstallment.setInstallmentId(1L);
+        loanInstallment.setPaid(false);
+        loanInstallment.setAmount(BigDecimal.valueOf(1200));
+        loanInstallment.setDueDate(LocalDate.of(2025, 12, 1));
+        // actual payment should be 1200 * 0.001 * LocalDate.now() diff
+
+        LocalDate now = LocalDate.now();
+        long diff = Math.abs(ChronoUnit.DAYS.between(now, loanInstallment.getDueDate()));
+        BigDecimal amount = loanInstallment.getAmount();
+        BigDecimal expectedAmount =
+                amount.subtract(amount.multiply(Constant.EARLY_PAY_REWARD).multiply(BigDecimal.valueOf(diff)));
+
+        BigDecimal amountReturn = loanService.calculatePaymentAmount(loanInstallment);
+
+        assertEquals(amountReturn, expectedAmount);
+    }
+
+    @Test
+    void calculatePaymentAmount_ShouldPaySameOnDueDate() {
+        LoanInstallment loanInstallment = new LoanInstallment();
+        loanInstallment.setAmount(BigDecimal.valueOf(1000));
+        loanInstallment.setInstallmentId(1L);
+        loanInstallment.setPaid(false);
+        loanInstallment.setAmount(BigDecimal.valueOf(1200));
+        loanInstallment.setDueDate(LocalDate.now());
+
+        BigDecimal amount = loanInstallment.getAmount();
+
+        BigDecimal amountReturn = loanService.calculatePaymentAmount(loanInstallment);
+
+        assertEquals(amountReturn, amount);
+    }
+
+    @Test
+    void calculatePaymentAmount_ShouldPayFineAfterDueDate() {
+        LoanInstallment loanInstallment = new LoanInstallment();
+        loanInstallment.setAmount(BigDecimal.valueOf(1000));
+        loanInstallment.setInstallmentId(1L);
+        loanInstallment.setPaid(false);
+        loanInstallment.setAmount(BigDecimal.valueOf(1200));
+        loanInstallment.setDueDate(LocalDate.of(2025, 11, 1));
+
+        BigDecimal amount = loanInstallment.getAmount();
+        LocalDate now = LocalDate.now();
+        long diff = Math.abs(ChronoUnit.DAYS.between(now, loanInstallment.getDueDate()));
+        BigDecimal expectedAmount =
+                amount.add(amount.multiply(Constant.LATE_PAY_FINE).multiply(BigDecimal.valueOf(diff)));
+
+        BigDecimal amountReturn = loanService.calculatePaymentAmount(loanInstallment);
+
+        assertEquals(amountReturn, expectedAmount);
+    }
+
+    @Test
     void customerLimit_ShouldThrowIfNotEnoughLimit() {
         Customer customer = new Customer();
         customer.setCustomerId(1L);
@@ -128,5 +189,17 @@ public class LoanServiceTests {
         customer.setUsedCreditLimit(BigDecimal.valueOf(0));
 
         assertDoesNotThrow(() -> loanService.checkCustomerLimit(customer, BigDecimal.valueOf(10000)));
+    }
+
+    @Test
+    void customerLimit_ShouldThrowIfMoreThanActualLimit() {
+        Customer customer = new Customer();
+        customer.setCustomerId(1L);
+        customer.setUserId(1L);
+        customer.setCreditLimit(BigDecimal.valueOf(20000));
+        customer.setUsedCreditLimit(BigDecimal.valueOf(0));
+
+        assertThrows(CustomerLimitIsNotEnoughException.class,
+                () -> loanService.checkCustomerLimit(customer, BigDecimal.valueOf(100_000)));
     }
 }

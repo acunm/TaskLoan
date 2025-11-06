@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.Constant;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Loan;
 import com.example.demo.entity.LoanInstallment;
@@ -13,6 +14,7 @@ import com.example.demo.model.response.InstallmentResponse;
 import com.example.demo.model.response.LoanResponse;
 import com.example.demo.model.response.PayInstallmentResponse;
 import com.example.demo.repository.LoanRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -93,12 +96,13 @@ public class LoanService {
         List<InstallmentResponse> paidInstallments = new ArrayList<>();
 
         for (LoanInstallment installment : unpaidInstallments) {
-            BigDecimal installmentAmount = installment.getAmount();
-            if (amount.compareTo(installmentAmount) < 0)
+            BigDecimal amountToPay = calculatePaymentAmount(installment);
+
+            if (amount.compareTo(amountToPay) < 0)
                 throw new RuntimeException(); // TODO
 
-            paidInstallments.add(new InstallmentResponse(loanInstallmentService.payInstallment(installment, installmentAmount)));
-            amount = amount.subtract(installmentAmount);
+            paidInstallments.add(new InstallmentResponse(loanInstallmentService.payInstallment(installment, amountToPay)));
+            amount = amount.subtract(amountToPay);
         }
 
         if(unpaidInstallments.size() - paidInstallments.size() == 0) {
@@ -110,6 +114,24 @@ public class LoanService {
                 .totalPaidAmount(paidInstallments.stream().map(InstallmentResponse::getInstallmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add))
                 .totalPaidCount(paidInstallments.size())
                 .build();
+    }
+
+    public BigDecimal calculatePaymentAmount(LoanInstallment installment) {
+        LocalDate dueDate = installment.getDueDate();
+        LocalDate now = LocalDate.now();
+        BigDecimal amount = installment.getAmount();
+
+        if(dueDate.isBefore(now)) {
+            long diff = Math.abs(ChronoUnit.DAYS.between(now, dueDate));
+            return amount.add(installment.getAmount().multiply(Constant.LATE_PAY_FINE.multiply(BigDecimal.valueOf(diff))));
+        }
+
+        if(dueDate.isAfter(now)) {
+            long diff = Math.abs(ChronoUnit.DAYS.between(now, dueDate));
+            return amount.subtract(installment.getAmount().multiply(Constant.EARLY_PAY_REWARD.multiply(BigDecimal.valueOf(diff))));
+        }
+
+        return installment.getAmount();
     }
 
     public void checkCustomerLimit(Customer customer, BigDecimal loanAmount) {
