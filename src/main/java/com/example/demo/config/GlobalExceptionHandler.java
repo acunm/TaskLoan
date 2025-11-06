@@ -87,4 +87,22 @@ public class GlobalExceptionHandler {
         body.put("path", request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(LoanAlreadyPaidException.class)
+    public ResponseEntity<Object> handleLoanAlreadyPaidException(Exception ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotEnoughBalanceException.class)
+    public ResponseEntity<Object> handleNotEnoughBalanceException(Exception ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
 }

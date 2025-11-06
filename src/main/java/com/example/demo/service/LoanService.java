@@ -6,7 +6,9 @@ import com.example.demo.entity.Loan;
 import com.example.demo.entity.LoanInstallment;
 import com.example.demo.entity.User;
 import com.example.demo.exception.CustomerLimitIsNotEnoughException;
+import com.example.demo.exception.LoanAlreadyPaidException;
 import com.example.demo.exception.LoanNotFoundException;
+import com.example.demo.exception.NotEnoughBalanceException;
 import com.example.demo.model.request.CreateLoanRequest;
 import com.example.demo.model.request.PayInstallmentRequest;
 import com.example.demo.model.response.CreateLoanResponse;
@@ -65,7 +67,7 @@ public class LoanService {
     }
 
     public List<LoanResponse> listUserLoans(Long customerId) {
-        if(canUserOperate(customerId))
+        if(!canUserOperate(customerId))
             throw new AccessDeniedException("You do not have access to this resource");
 
         List<Loan> loans = loanRepository.findAllByCustomerId(customerId);
@@ -81,7 +83,7 @@ public class LoanService {
          Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new LoanNotFoundException("Loan not found"));
 
          if(loan.isPaid())
-             throw new RuntimeException(); // TODO
+             throw new LoanAlreadyPaidException("Loan Already Paid");
 
          if(!canUserOperate(loan.getCustomerId()))
              throw new AccessDeniedException("You do not have access to this resource");
@@ -99,7 +101,7 @@ public class LoanService {
             BigDecimal amountToPay = calculatePaymentAmount(installment);
 
             if (amount.compareTo(amountToPay) < 0)
-                throw new RuntimeException(); // TODO
+                throw new NotEnoughBalanceException("Balance is not enough to pay");
 
             paidInstallments.add(new InstallmentResponse(loanInstallmentService.payInstallment(installment, amountToPay)));
             amount = amount.subtract(amountToPay);
