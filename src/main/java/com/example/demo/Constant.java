@@ -26,9 +26,10 @@ public class Constant {
 
 
     public static void main(String[] args) {
-        LocalDate start = LocalDate.of(2025, 11, 1);
+        // TODO remove
+        LocalDate start = LocalDate.of(2025, 9, 1);
         LocalDate now = LocalDate.now();
 
-        System.out.println(ChronoUnit.DAYS.between(start, now));
+        System.out.println(ChronoUnit.MONTHS.between(start, now));
     }
 }

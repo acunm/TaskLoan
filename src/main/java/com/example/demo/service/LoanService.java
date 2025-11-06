@@ -79,6 +79,7 @@ public class LoanService {
         loanRepository.save(loan);
     }
 
+    @Transactional
     public PayInstallmentResponse payInstallment(Long loanId, PayInstallmentRequest request) {
          Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new LoanNotFoundException("Loan not found"));
 
@@ -96,12 +97,22 @@ public class LoanService {
 
         BigDecimal amount = request.getAmount();
         List<InstallmentResponse> paidInstallments = new ArrayList<>();
-
         for (LoanInstallment installment : unpaidInstallments) {
+            if(paidInstallments.size() == 3) {
+                break;
+            }
+            if(Math.abs(ChronoUnit.MONTHS.between(installment.getDueDate(), LocalDate.now())) > 2) {
+                break;
+            }
             BigDecimal amountToPay = calculatePaymentAmount(installment);
 
-            if (amount.compareTo(amountToPay) < 0)
+            if (amount.compareTo(amountToPay) < 0) {
+                if(!paidInstallments.isEmpty()) {
+                    break;
+                }
+
                 throw new NotEnoughBalanceException("Balance is not enough to pay");
+            }
 
             paidInstallments.add(new InstallmentResponse(loanInstallmentService.payInstallment(installment, amountToPay)));
             amount = amount.subtract(amountToPay);
