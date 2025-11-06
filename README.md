@@ -5,7 +5,7 @@ This is my solution for the INGHubs Loan API task.
 ---
 
 ## How to run
-Jar file in repo can be run directly with java command. 
+Jar file in releases section can be run directly with java command. 
 
 java -jar demo-0.0.1-SNAPSHOT.jar
 
