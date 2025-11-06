@@ -34,6 +34,7 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final LoanInstallmentService loanInstallmentService;
 
+    @Transactional
     public CreateLoanResponse createLoan(CreateLoanRequest request) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Customer customer = customerService.findCustomerByUserId(user.getUserId());
