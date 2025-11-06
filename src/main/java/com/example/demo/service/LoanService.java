@@ -112,7 +112,7 @@ public class LoanService {
                 .build();
     }
 
-    private void checkCustomerLimit(Customer customer, BigDecimal loanAmount) {
+    public void checkCustomerLimit(Customer customer, BigDecimal loanAmount) {
         BigDecimal remainingLimit = customer.getCreditLimit().subtract(customer.getUsedCreditLimit());
 
         if(remainingLimit.compareTo(loanAmount) < 0)
